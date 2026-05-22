@@ -1,0 +1,147 @@
+@startuml
+'https://plantuml.com/class-diagram
+class Ability{
+    private final int id
+    private final String name
+    private final String description
+    private int cost
+    private int dmg
+    public Ability(int id, String name, String description, int cost, int dmg)
+}
+class Character {
+    private Set<Ability> unlockedAbilities = new HashSet<>();
+    List<Item> inventory
+    int xp
+}
+class CombatStatusPanel{
+    private final Model model
+    private JLabel playerHpLabel
+    private DefaultListModel<String> monsterListModel
+    private JList<String> monsterList
+    private JComboBox<Monster> targetBox
+    private JComboBox<Ability> abilityBox
+    private JButton attackButton
+    private JButton useAbilityButton
+    public CombatStatusPanel(Model model)
+    public void refresh()
+    private void basicAttack()
+    private void abilityAttack()
+}
+class DependencyGraph{
+    private final Map<Ability, Set<Ability>> adjList = new HashMap<>()
+    public void addAbility(Ability a)
+    public void addDependency(Ability parent, Ability child)
+    public Set<Ability> getChildren(Ability a)
+    public Set<Ability> getParents(Ability a)
+    public boolean canUnlock(Ability a, Set<Ability> unlocked)
+    public Set<Ability> getUnlockable(Set<Ability> unlocked)
+}
+class Entity{
+    int id
+    String name
+    int xPos
+    int yPos
+    int hp
+    public Entity(String name, int xPosition, int yPosition, int hp)
+    public String toString()
+}
+class GameCanvas{
+    private final World map
+    Character player
+    public GameCanvas(World map, Character player)
+    public void paint(Graphics g)
+}
+class GameCompletedFrame{
+    public GameCompletedFrame()
+}
+class GameEngine{
+    public static final Model model = new Model()
+    public static void main(String[] args)
+}
+class GameFrame{
+    private JButton upButton, downButton, rightButton, leftButton
+    private Canvas canvas
+    private final Model model
+    private  CountDownLatch latch
+    public GameFrame(Model model, CountDownLatch latch)
+}
+class Item
+class MenuFrame {
+    private final JComboBox<String> box
+    private final JTextField nameField = new JTextField(20)
+    private final JButton startButton = new JButton("Play!")
+    private final Model model
+    private final CountDownLatch latch
+    public MenuFrame(Model model, CountDownLatch latch)
+    class StartButtonActionListener implements ActionListener
+}
+class Model {
+    private World world
+    private DependencyGraph graph
+    private Character player
+    public Model()
+}
+class Monster {
+    public Monster(String name, int xPosition, int yPosition, int hp)
+}
+enum MoveResult {
+    INVALID
+    VALID
+    GAME_COMPLETED
+}
+class SkillPanel {
+    private JComboBox<Ability> unlockableBox
+    private JButton unlockButton
+    private final Model model
+    public SkillPanel(Model model)
+    private JPanel createUnlockablePanel()
+    public void refresh()
+    private void updateButtonState()
+}
+class Tile {
+    public int x,y, width, height
+    private int type
+    List<Entity> entities = new ArrayList<>()
+    public Tile(int type,int xPosition, int yPosition, int width, int height)
+
+}
+class World {
+    private Tile[][] tiles
+    public int rows
+    public int cols
+    public World(int rows, int cols)
+    public MoveResult movePlayer(Character player, int dx, int dy)
+}
+class XmlMapLoader {
+    public static void loadIntoModel(String path, Model model)
+    public static World loadMap(Element root)
+    private static void loadEnemies(Element root, World world)
+    private static DependencyGraph loadAbilities(Element root)
+}
+
+GameEngine --- MenuFrame
+GameEngine --- GameFrame
+GameEngine --- GameCompletedFrame
+GameEngine *-- Model
+
+GameFrame --- GameCanvas
+GameFrame --- CombatStatusPanel
+GameFrame --- SkillPanel
+
+Model o-- World
+Model o-- Character
+Model o-- DependencyGraph
+
+Entity <|-- Character
+Entity <|-- Monster
+
+World *-- Entity
+World *-- Tile
+World --- MoveResult
+
+DependencyGraph *--- Ability
+
+Character *-- Item
+
+MenuFrame --- XmlMapLoader
+@enduml
